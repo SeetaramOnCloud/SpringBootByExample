@@ -1,10 +1,10 @@
 package com.springboot.example.service;
 
+import com.springboot.example.dao.entities.AccountDTO;
 import com.springboot.example.dao.entities.AccountSetting;
 import com.springboot.example.model.Account;
 import com.springboot.example.dao.repositories.AccountRepository;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -19,23 +19,42 @@ public class AccountService {
 
     @Transactional
     public void saveAccounts(List<Account> accounts){
-        List<com.springboot.example.dao.entities.Account> accountDAOs = accounts.stream().map( account -> {
-                    com.springboot.example.dao.entities.Account accountDAO = new com.springboot.example.dao.entities.Account();
-                    accountDAO.setName("testName" + account.getAccountNumber());
-                    accountDAO.setEmailAddress("testName@" + account.getAccountNumber());
+        List<AccountDTO> accountDTODAOS = accounts.stream().map(account -> {
+                    AccountDTO accountDTODAO = new AccountDTO();
+                    accountDTODAO.setName("testName" + account.getAccountNumber());
+                    accountDTODAO.setEmailAddress("testName@" + account.getAccountNumber());
                     List<AccountSetting> accountSettings = new ArrayList<>();
                     AccountSetting as = new AccountSetting();
-                    as.setAccount(accountDAO);
+                    as.setAccountDTO(accountDTODAO);
                     as.setSettingName("test-setting");
                     as.setSettingValue("test-value");
                     accountSettings.add(as);
-                    accountDAO.setAccountSettings(accountSettings);
-                    return accountDAO;
+                    accountDTODAO.setAccountSettings(accountSettings);
+                    return accountDTODAO;
                 }).collect(Collectors.toList());
 
-        accountRepository.saveAll(accountDAOs);
+        accountRepository.saveAll(accountDTODAOS);
     }
 
+    public List<AccountDTO> mapToAccount(List<Account> accounts){
+        List<AccountDTO> accountDTOlist=new ArrayList<>();
+        for (Account account :accounts) {
+        	accountDTOlist.add(convertFromAccount(account));
+        }
+        return accountDTOlist;
+
+
+    }
+
+    private AccountDTO convertFromAccount(Account account) {
+        AccountDTO accountDTO = new AccountDTO();
+
+        accountDTO.setName(account.getAccountNumber());
+        accountDTO.setEmailAddress(account.getArn());
+        accountDTO.setAccountSettings(null);
+        return accountDTO;
+
+    }
 
 
 }

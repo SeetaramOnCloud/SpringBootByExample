@@ -9,7 +9,7 @@ import java.util.List;
 @Entity
 @Table(name = "accounts")
 @Data
-public class Account {
+public class AccountDTO {
 
     @Id
     @SequenceGenerator(name= "ACCOUNT_SEQUENCE", sequenceName = "ACCOUNT_SEQUENCE", initialValue=1, allocationSize = 1)
@@ -22,7 +22,7 @@ public class Account {
     @Column(name = "email_address")
     private String emailAddress;
 
-    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "accountDTO", cascade = CascadeType.ALL)
     private List<AccountSetting> accountSettings = new ArrayList<>();
 
     // getters and setters
